@@ -1,4 +1,5 @@
 --credits to vorp_goldpanning
+--made by 2Green for British Outlaws Roleplay
 
 local entity
 local Filling = false
@@ -22,7 +23,7 @@ local WaterTypes = {
     [16] =  {["name"] = "Moonstone Pond",       ["waterhash"] = -811730579, ["watertype"] = "lake"},
     [17] =  {["name"] = "Roanoke Valley",       ["waterhash"] = -1229593481, ["watertype"] = "river"},
     [18] =  {["name"] = "Elysian Pool",         ["waterhash"] = -105598602, ["watertype"] = "lake"},
-	[19] =  {["name"] = "Heartland Overflow",   ["waterhash"] = 1755369577, ["watertype"] = "swamp"},
+    [19] =  {["name"] = "Heartland Overflow",   ["waterhash"] = 1755369577, ["watertype"] = "swamp"},
     [20] =  {["name"] = "Lagras",               ["waterhash"] = -557290573, ["watertype"] = "swamp"},
     [21] =  {["name"] = "Lannahechee River",    ["waterhash"] = -2040708515, ["watertype"] = "river"},
     [22] =  {["name"] = "Dakota River",         ["waterhash"] = 370072007, ["watertype"] = "river"},
@@ -33,6 +34,23 @@ local WaterTypes = {
     [27] =  {["name"] = "Random5",              ["waterhash"] = -196675805, ["watertype"] = "river"},
 }
 
+Citizen.CreateThread(function()
+    while true do 
+        Citizen.Wait(1)
+        local player = PlayerPedId()
+        local Coords = GetEntityCoords(player)
+        local waterpump = DoesObjectOfTypeExistAtCoords(Coords.x, Coords.y, Coords.z, 1.0, GetHashKey("p_waterpump01x"), 0)
+        if waterpump ~= false then
+            DrawTxt("Fill Canteen [Enter]", 0.50, 0.95, 0.7, 0.5, true, 255, 255, 255, 255, true)
+            if IsControlJustPressed(0, 0xC7B5340A) then
+				doPromptAnim("amb_work@prop_human_pump_water@female_b@idle_a", "idle_a", 2);
+				TriggerServerEvent('fillup')
+				Wait(10000)
+				ClearPedTasks(PlayerPedId())
+            end
+        end
+    end
+end)
 
 RegisterNetEvent('green:StartFilling')
 AddEventHandler('green:StartFilling', function()
@@ -123,4 +141,29 @@ function drinkinganim()
 		TriggerEvent("vorp:TipRight", Config.drink_1, 500)
         ClearPedTasksImmediately(PlayerPedId())
     end
+end
+
+function DrawTxt(str, x, y, w, h, enableShadow, col1, col2, col3, a, centre)
+    local str = CreateVarString(10, "LITERAL_STRING", str)
+
+
+    --Citizen.InvokeNative(0x66E0276CC5F6B9DA, 2)
+    SetTextScale(w, h)
+    SetTextColor(math.floor(col1), math.floor(col2), math.floor(col3), math.floor(a))
+	SetTextCentre(centre)
+    if enableShadow then SetTextDropshadow(1, 0, 0, 0, 255) end
+	Citizen.InvokeNative(0xADA9255D, 1);
+    DisplayText(str, x, y)
+end	
+
+function doPromptAnim(dict, anim, loop)
+    activate = false
+    toggle = 0
+    local playerPed = PlayerPedId()
+    RequestAnimDict(dict)
+    while not HasAnimDictLoaded(dict) do
+        Citizen.Wait(100)
+    end
+    TaskPlayAnim(playerPed, dict, anim, 8.0, -8.0, 13000, loop, 0, true, 0, false, 0, false)
+	play_anim = false
 end
