@@ -1,5 +1,11 @@
 VORP = exports.vorp_inventory:vorp_inventoryApi()
 
+local VorpCore = {}
+
+TriggerEvent("getCore",function(core)
+    VorpCore = core
+end)
+
 
 
 Citizen.CreateThread(function()
@@ -34,3 +40,16 @@ AddEventHandler("fillup", function()
     end
 end)
 
+RegisterServerEvent("checkcanteen")
+AddEventHandler("checkcanteen", function(rock)
+	local _source = source
+	local Character = VorpCore.getUser(_source).getUsedCharacter
+	local empty = VORP.getItemCount(_source, 'canteenempty')
+
+	if empty > 0 then
+		TriggerClientEvent("canteencheck", _source)
+	else
+		TriggerClientEvent("vorp:TipRight", _source, "You need a canteen", 2000)
+	end
+end)
+	
