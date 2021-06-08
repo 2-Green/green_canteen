@@ -1,5 +1,4 @@
 --credits to vorp_goldpanning
---made by 2Green for British Outlaws Roleplay
 
 local entity
 local Filling = false
@@ -23,7 +22,7 @@ local WaterTypes = {
     [16] =  {["name"] = "Moonstone Pond",       ["waterhash"] = -811730579, ["watertype"] = "lake"},
     [17] =  {["name"] = "Roanoke Valley",       ["waterhash"] = -1229593481, ["watertype"] = "river"},
     [18] =  {["name"] = "Elysian Pool",         ["waterhash"] = -105598602, ["watertype"] = "lake"},
-    [19] =  {["name"] = "Heartland Overflow",   ["waterhash"] = 1755369577, ["watertype"] = "swamp"},
+	[19] =  {["name"] = "Heartland Overflow",   ["waterhash"] = 1755369577, ["watertype"] = "swamp"},
     [20] =  {["name"] = "Lagras",               ["waterhash"] = -557290573, ["watertype"] = "swamp"},
     [21] =  {["name"] = "Lannahechee River",    ["waterhash"] = -2040708515, ["watertype"] = "river"},
     [22] =  {["name"] = "Dakota River",         ["waterhash"] = 370072007, ["watertype"] = "river"},
@@ -39,18 +38,19 @@ Citizen.CreateThread(function()
         Citizen.Wait(1)
         local player = PlayerPedId()
         local Coords = GetEntityCoords(player)
-        local waterpump = DoesObjectOfTypeExistAtCoords(Coords.x, Coords.y, Coords.z, 1.0, GetHashKey("p_waterpump01x"), 0)
+        local waterpump = DoesObjectOfTypeExistAtCoords(Coords.x, Coords.y, Coords.z, 1.0, GetHashKey("p_waterpump01x"), 0) -- prop required to interact
         if waterpump ~= false then
-            DrawTxt("Fill Canteen [Enter]", 0.50, 0.95, 0.7, 0.5, true, 255, 255, 255, 255, true)
+            DrawTxt("Fill Canteen ~t6~[ENTER]", 0.50, 0.95, 0.7, 0.5, true, 255, 255, 255, 255, true)
             if IsControlJustPressed(0, 0xC7B5340A) then
 				doPromptAnim("amb_work@prop_human_pump_water@female_b@idle_a", "idle_a", 2);
-				TriggerServerEvent('fillup')
+				TriggerServerEvent('checkcanteen')
 				Wait(10000)
 				ClearPedTasks(PlayerPedId())
             end
         end
     end
 end)
+
 
 RegisterNetEvent('green:StartFilling')
 AddEventHandler('green:StartFilling', function()
@@ -87,6 +87,7 @@ AddEventHandler('green:StartFilling', function()
     end
 end)
 
+
 function CrouchAnimAndAttach()
     local dict = "script_rc@cldn@ig@rsc2_ig1_questionshopkeeper"
     RequestAnimDict(dict)
@@ -99,12 +100,12 @@ function CrouchAnimAndAttach()
     local boneIndex = GetEntityBoneIndexByName(ped, "SKEL_R_HAND")
     local modelHash = GetHashKey("p_cs_canteen_hercule")
     LoadModel(modelHash)
-    entity = CreateObject(modelHash, coords.x+0.3, coords.y,coords.z, true, false, false)
+    entity = CreateObject(modelHash, coords.x, coords.y,coords.z, true, false, false)
     SetEntityVisible(entity, true)
     SetEntityAlpha(entity, 255, false)
     Citizen.InvokeNative(0x283978A15512B2FE, entity, true)
     SetModelAsNoLongerNeeded(modelHash)
-    AttachEntityToEntity(entity,ped, boneIndex, 0.1, 0.0, -0.2, -100.0, -50.0, 0.0, false, false, false, true, 2, true)
+    AttachEntityToEntity(entity,ped, boneIndex, 0.12, 0.09, -0.05, 306.0, 18.0, 0.0, false, false, false, true, 2, true)
 
     TaskPlayAnim(ped, dict, "inspectfloor_player", 1.0, 8.0, -1, 1, 0, false, false, false)
 end
@@ -127,6 +128,13 @@ TriggerEvent("vorpmetabolism:changeValue", "Thirst", 500)
 drinkinganim()
 end)
 
+RegisterNetEvent('canteencheck')
+AddEventHandler('canteencheck', function()
+
+TriggerServerEvent("fillup")
+
+end)
+
 function drinkinganim()
     local ped = PlayerPedId()
     if IsPedMale(ped) then
@@ -142,6 +150,7 @@ function drinkinganim()
         ClearPedTasksImmediately(PlayerPedId())
     end
 end
+
 
 function DrawTxt(str, x, y, w, h, enableShadow, col1, col2, col3, a, centre)
     local str = CreateVarString(10, "LITERAL_STRING", str)
@@ -167,3 +176,26 @@ function doPromptAnim(dict, anim, loop)
     TaskPlayAnim(playerPed, dict, anim, 8.0, -8.0, 13000, loop, 0, true, 0, false, 0, false)
 	play_anim = false
 end
+
+--Horse Wagon Wheel Breaking --
+
+RegisterNetEvent("vorp:SelectedCharacter")
+AddEventHandler("vorp:SelectedCharacter", function(charid)
+    Citizen.CreateThread(function()
+        while true do 
+            local playerPed = PlayerPedId()
+            local vehicle = GetVehiclePedIsIn(playerPed, false)
+            local speed = GetEntitySpeed(vehicle)
+            local random_destroy = math.random(0,1)
+            local random_calc = math.random(0,150)
+            if vehicle ~= nil and vehicle ~= 0 then
+                if speed >= 12 and random_calc == 0 then
+                    --TriggerEvent("vorp:TipRight", 'You Broke a Wheel', 500)
+                    Citizen.InvokeNative(0xd4f5efb55769d272, vehicle, random_destroy)
+                    fix_veh = vehicle
+                end
+            end
+            Citizen.Wait(1000)
+        end
+    end)
+end)
