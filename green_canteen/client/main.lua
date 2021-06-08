@@ -42,10 +42,7 @@ Citizen.CreateThread(function()
         if waterpump ~= false then
             DrawTxt("Fill Canteen ~t6~[ENTER]", 0.50, 0.95, 0.7, 0.5, true, 255, 255, 255, 255, true)
             if IsControlJustPressed(0, 0xC7B5340A) then
-				doPromptAnim("amb_work@prop_human_pump_water@female_b@idle_a", "idle_a", 2);
 				TriggerServerEvent('checkcanteen')
-				Wait(10000)
-				ClearPedTasks(PlayerPedId())
             end
         end
     end
@@ -130,7 +127,9 @@ end)
 
 RegisterNetEvent('canteencheck')
 AddEventHandler('canteencheck', function()
-
+doPromptAnim("amb_work@prop_human_pump_water@female_b@idle_a", "idle_a", 2);
+Wait(10000)
+ClearPedTasks(PlayerPedId())
 TriggerServerEvent("fillup")
 
 end)
