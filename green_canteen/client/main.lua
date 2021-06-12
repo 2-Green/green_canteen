@@ -176,26 +176,3 @@ function doPromptAnim(dict, anim, loop)
     TaskPlayAnim(playerPed, dict, anim, 8.0, -8.0, 13000, loop, 0, true, 0, false, 0, false)
 	play_anim = false
 end
-
---Horse Wagon Wheel Breaking --
-
-RegisterNetEvent("vorp:SelectedCharacter")
-AddEventHandler("vorp:SelectedCharacter", function(charid)
-    Citizen.CreateThread(function()
-        while true do 
-            local playerPed = PlayerPedId()
-            local vehicle = GetVehiclePedIsIn(playerPed, false)
-            local speed = GetEntitySpeed(vehicle)
-            local random_destroy = math.random(0,1)
-            local random_calc = math.random(0,150)
-            if vehicle ~= nil and vehicle ~= 0 then
-                if speed >= 12 and random_calc == 0 then
-                    --TriggerEvent("vorp:TipRight", 'You Broke a Wheel', 500)
-                    Citizen.InvokeNative(0xd4f5efb55769d272, vehicle, random_destroy)
-                    fix_veh = vehicle
-                end
-            end
-            Citizen.Wait(1000)
-        end
-    end)
-end)
