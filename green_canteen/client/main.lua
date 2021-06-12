@@ -122,6 +122,7 @@ end
 RegisterNetEvent('green:drink')
 AddEventHandler('green:drink', function()
 TriggerEvent("vorpmetabolism:changeValue", "Thirst", 500)
+		--TriggerEvent("fred:consume", 0, 500, 0, 0, 0, 0, 0, 0) -- UNCOMMENT AND COMMENT ABOVE IF USING FRED_METABOLISM 
 drinkinganim()
 end)
 
