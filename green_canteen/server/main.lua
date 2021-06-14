@@ -49,7 +49,8 @@ AddEventHandler("checkcanteen", function(rock)
 	if empty > 0 then
 		TriggerClientEvent("canteencheck", _source)
 	else
-		TriggerClientEvent("vorp:TipRight", _source, "You need a canteen", 2000)
+		TriggerClientEvent("vorp:TipRight", _source, Config.cantfill, 2000)
 	end
 end)
+
 	
